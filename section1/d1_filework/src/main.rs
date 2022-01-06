@@ -1,5 +1,23 @@
 use serde_derive::*;
 
+#[derive(Debug)]
+pub enum TransactionError {
+    LoadError(std::io::Error),
+    ParseError(serde_json::Error)
+}
+
+impl From<std::io::Error> for TransactionError {
+    fn from (err: std::io::Error) -> Self {
+        TransactionError::LoadError(err)
+    }
+}
+
+impl From<serde_json::Error> for TransactionError {
+    fn from (err: serde_json::Error) -> Self {
+        TransactionError::ParseError(err)
+    }
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct  Transaction {
     from:  String,
@@ -18,6 +36,11 @@ fn main() {
     for t in trans {
         println!("{:?}", t);
     }
+    
+    let trans = get_transactions_c("test_data/transactions.json").expect("Could not load transactions");
+    for t in trans {
+        println!("{:?}", t);
+    }
 }
 
 fn get_transactions(file_name: &str) -> Result<Vec<Transaction>, String> {
@@ -33,8 +56,12 @@ fn get_transactions(file_name: &str) -> Result<Vec<Transaction>, String> {
     Ok(t)
 }
 
-fn get_transactions_b(file_name: &str) -> Result<Vec<Transaction>, String> {
+fn get_transactions_b(file_name: &str) -> Result<Vec<Transaction>, TransactionError> {
     std::fs::read_to_string(file_name)
-        .map_err(|e| format!("{:?}", e))
-        .and_then(|s| serde_json::from_str(&s).map_err(|e| format!("{:?}", e)))
+        .map_err(|e| e.into())
+        .and_then(|s| serde_json::from_str(&s).map_err(|e| e.into()))
+}
+
+fn get_transactions_c(file_name: &str) -> Result<Vec<Transaction>, TransactionError> {
+    Ok(serde_json::from_str(&std::fs::read_to_string(file_name)?)?)
 }
