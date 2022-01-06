@@ -16,7 +16,14 @@ fn main() {
 }
 
 fn get_transaction(file_name: &str) -> Result<Vec<Transaction>, String> {
-    let s = std::fs::read_to_string(file_name).unwrap();
-    let t: Vec<Transaction> = serde_json::from_str(&s).unwrap();
+    let s = match std::fs::read_to_string(file_name) {
+        Ok(v) => v,
+        Err(e) => return Err(format!("{:?}", e)),
+    };
+
+    let t: Vec<Transaction> = match serde_json::from_str(&s) {
+        Ok(v) => v,
+        Err(e) => return Err(format!("{:?}", e)),
+    };
     Ok(t)
 }
