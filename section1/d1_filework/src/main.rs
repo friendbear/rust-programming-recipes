@@ -19,7 +19,7 @@ fn main() -> Result<(), TransactionError> {
         println!("{:?}", t);
     }
 
-    let tran = get_first_trunsaction_for("test_data/transctions.json", "A")
+    let tran = get_first_trunsaction_for("test_data/transactions.json", "A")
         .ok_or("Could not load transaction")?;
 
     println!("A's first transaction:{:?}", tran);
