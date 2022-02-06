@@ -1,7 +1,8 @@
 extern crate d1_filework;
-use d1_filework::{get_transactions,get_first_trunsaction_for, get_transactions_b, get_transactions_c, TransactionError};
+use failure::Error;
+use d1_filework::{get_transactions,get_first_trunsaction_for, get_transactions_b, get_transactions_c};
 
-fn main() -> Result<(), TransactionError> {
+fn main() -> Result<(), Error> {
     println!("Hello, world!");
 
     let trans = get_transactions("test_data/transactions.json").expect("Could not load transactions");
@@ -19,11 +20,11 @@ fn main() -> Result<(), TransactionError> {
         println!("{:?}", t);
     }
 
-    let tran = get_first_trunsaction_for("test_data/transactions.json", "A")
-        .ok_or("Could not load transaction")?;
-
-    println!("A's first transaction:{:?}", tran);
-
+    let tran = get_first_trunsaction_for("test_data/transactions.json", "A");
+    match tran {
+        Ok(v)  => println!("Found transaction: {:?}", v),
+        Err(e) => println!("Error: {}, Backtrace: {}", e, e.backtrace())
+    }
     Ok(())
 }
 

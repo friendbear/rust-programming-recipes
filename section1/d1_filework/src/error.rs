@@ -1,8 +1,15 @@
+use failure_derive::*;
 
-#[derive(Debug)]
+#[derive(Debug,Fail)]
 pub enum TransactionError {
+
+    #[fail(display = "Could not file: {}", 0)]
     LoadError(std::io::Error),
+
+    #[fail(display = "Could not parse file: {}", 0)]
     ParseError(serde_json::Error),
+
+    #[fail(display = "Error:{}", 0)]
     Message(&'static str)
 }
 
