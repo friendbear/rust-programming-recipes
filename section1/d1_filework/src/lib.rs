@@ -1,3 +1,4 @@
+
 mod error;
 pub use error::TransactionError;
 
@@ -11,15 +12,16 @@ pub struct  Transaction {
 }
 
 
-pub fn get_first_trunsaction_for(file_name: &str, uname: &str) -> Option<Transaction> {
+pub fn get_first_trunsaction_for(file_name: &str, uname: &str) -> 
+    Result<Transaction, failure::Error> {
 
-    let  trans = get_transactions_c(file_name).ok()?;
+    let trans = get_transactions_c(file_name)?;
     for t  in trans {
         if t.from == uname {
-            return Some(t)
+            return Ok(t)
         }
     }
-    None
+    Err(TransactionError::Message("Could not find transaction with that name",).into())
 }
 pub fn get_transactions(file_name: &str) -> Result<Vec<Transaction>, String> {
     let s = match std::fs::read_to_string(file_name) {
